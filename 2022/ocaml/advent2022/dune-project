@@ -1,0 +1,11 @@
+(lang dune 3.6)
+
+(name advent2022)
+
+(authors "Niels Lindgren")
+
+(package
+ (name advent2022)
+ (synopsis "A short synopsis")
+ (description "A longer description")
+ (depends ocaml dune))
