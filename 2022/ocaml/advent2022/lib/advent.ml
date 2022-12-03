@@ -12,3 +12,11 @@ let rec take k xs =
     match xs with
     | [] -> failwith "take"
     | y :: ys -> y :: take (k - 1) ys)
+
+let chunk n xs =
+  let rec chunk_aux xs () =
+    match xs () with
+    | Seq.Nil -> Seq.Nil
+    | _ -> Seq.Cons (Seq.take n xs, chunk_aux (Seq.drop n xs))
+  in
+  chunk_aux xs

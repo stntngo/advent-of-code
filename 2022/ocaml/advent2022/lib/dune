@@ -1,3 +1,3 @@
 (library
  (name advent2022)
- (libraries str streaming bheap base))
+ (libraries str bheap base))

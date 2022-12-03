@@ -1,25 +1,11 @@
 module Day_one = Advent2022.Day_one
 module Day_two = Advent2022.Day_two
-open Advent2022.Advent
-open Streaming
+module Day_three = Advent2022.Day_three
 
 let days =
-  [ ( lazy (Day_one.stream |> Day_one.stream_top_n 1 |> sum |> string_of_int)
-    , lazy (Day_one.stream |> Day_one.stream_top_n 3 |> sum |> string_of_int) )
-  ; ( lazy
-        (Day_two.input
-        |> Stream.map (fun l ->
-               l
-               |> Day_two.parse_game (fun _ y -> Day_two.parse_move 'X' y)
-               |> Day_two.score_game)
-        |> Stream.fold (fun x y -> x + y) 0
-        |> string_of_int)
-    , lazy
-        (Day_two.input
-        |> Stream.map (fun l ->
-               l |> Day_two.parse_game Day_two.decode_move |> Day_two.score_game)
-        |> Stream.fold (fun x y -> x + y) 0
-        |> string_of_int) )
+  [ (Day_one.part_one, Day_one.part_two)
+  ; (Day_two.part_one, Day_two.part_two)
+  ; (Day_three.part_one, Day_three.part_two)
   ]
 
 let print_day day =

@@ -1,11 +1,4 @@
 open Advent
-open Streaming
-
-let input =
-  slurp "input/day02"
-  |> Str.split (Str.regexp "\n")
-  |> Stream.of_list
-  |> Stream.map (Str.split (Str.regexp " "))
 
 type choice =
   | Rock
@@ -56,3 +49,24 @@ let score_game game =
   | a, b when a == b -> 3 + score_game' b
   | a, b when b == loses a -> 6 + score_game' b
   | _, b -> 0 + score_game' b
+
+let input =
+  slurp "input/day02"
+  |> Str.split (Str.regexp "\n")
+  |> List.to_seq
+  |> Seq.map (Str.split (Str.regexp " "))
+
+let part_one =
+  lazy
+    (input
+    |> Seq.map (fun l ->
+           l |> parse_game (fun _ y -> parse_move 'X' y) |> score_game)
+    |> Seq.fold_left (fun x y -> x + y) 0
+    |> string_of_int)
+
+let part_two =
+  lazy
+    (input
+    |> Seq.map (fun l -> l |> parse_game decode_move |> score_game)
+    |> Seq.fold_left (fun x y -> x + y) 0
+    |> string_of_int)
