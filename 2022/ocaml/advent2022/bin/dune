@@ -1,4 +1,4 @@
 (executable
  (public_name advent2022)
  (name main)
- (libraries advent2022 str))
+ (libraries advent2022 str unix))
