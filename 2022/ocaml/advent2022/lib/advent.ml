@@ -15,6 +15,14 @@ let rec take k xs =
     | [] -> failwith "take"
     | y :: ys -> y :: take (k - 1) ys)
 
+let rec drop k xs =
+  match k with
+  | 0 -> xs
+  | k -> (
+    match xs with
+    | [] -> failwith "drop"
+    | _ :: ys -> drop (k - 1) ys)
+
 let chunk n xs =
   let rec chunk_aux xs () =
     match xs () with

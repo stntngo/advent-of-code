@@ -1,3 +1,4 @@
 (library
  (name advent2022)
- (libraries angstrom str bheap base))
+ (preprocess (pps ppx_show))
+ (libraries angstrom str bheap base ppx_show.runtime))
