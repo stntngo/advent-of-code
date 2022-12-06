@@ -32,6 +32,14 @@ struct IntComputer {
 }
 
 impl IntComputer {
+    fn new(program: Vec<i64>) -> Self {
+        return Self {
+            tape: program,
+            args: Vec::new(),
+            ptr: 0,
+            out: Vec::new(),
+        };
+    }
     fn input(&mut self, in_: i64) {
         self.args.push(in_)
     }
@@ -105,7 +113,7 @@ impl IntComputer {
     }
 
     fn next(&mut self) -> Command {
-        let op = parse_opcode(self.tape[self.ptr]);
+        let op: OpCode = self.tape[self.ptr].into();
         self.ptr += 1;
 
         let params = match op.code {
@@ -118,12 +126,7 @@ impl IntComputer {
 
         self.ptr += params.len();
 
-        // println!("{:?} {:?} {:?}", op, params, self.out);
-
-        return Command {
-            op: op,
-            params: params,
-        };
+        return Command { op, params };
     }
 }
 
@@ -139,12 +142,45 @@ struct OpCode {
     modes: Vec<i64>,
 }
 
+impl From<i64> for OpCode {
+    fn from(raw: i64) -> OpCode {
+        let mut digits = raw.digits();
+        digits.reverse();
+
+        while digits.len() < 5 {
+            digits.push(0);
+        }
+
+        let code = digits[0] + (10 * digits[1]);
+
+        if code == 5 || code == 6 {
+            digits[4] = 1;
+        }
+
+        return OpCode {
+            code,
+            modes: digits[2..digits.len()].to_vec(),
+        };
+    }
+}
+
 #[derive(Debug)]
 struct Amplifiers {
     computers: Vec<IntComputer>,
 }
 
 impl Amplifiers {
+    fn new(program: Vec<i64>) -> Self {
+        let mut computers = Vec::new();
+
+        for _ in 0..5 {
+            let comp = IntComputer::new(program.to_vec());
+            computers.push(comp);
+        }
+
+        return Self { computers };
+    }
+
     fn run(&mut self, phase: Vec<i64>) -> i64 {
         let mut last = 0;
 
@@ -174,71 +210,29 @@ impl Amplifiers {
     }
 }
 
-fn new_amplifier(program: Vec<i64>) -> Amplifiers {
-    let mut computers = Vec::new();
+fn part_one() {
+    let input = include_str!("input");
 
-    for _ in 0..5 {
-        let comp = new_intcomputer(program.to_vec());
-        computers.push(comp);
-    }
+    let program: Vec<i64> = input
+        .trim()
+        .split(",")
+        .map(|op| op.trim().parse::<i64>().unwrap())
+        .collect();
 
-    return Amplifiers {
-        computers: computers,
-    };
+    let mut data = [0, 1, 2, 3, 4];
+    let mut best = 0;
+    heap_recursive(&mut data, |perm| {
+        let _copy = program.to_vec();
+        let mut amp = Amplifiers::new(_copy);
+        let run_score = amp.run(perm.to_vec());
+
+        if run_score > best {
+            best = run_score;
+        }
+    });
+
+    println!("Answer One: {:?}", best);
 }
-
-fn parse_opcode(raw: i64) -> OpCode {
-    let mut digits = raw.digits();
-    digits.reverse();
-
-    while digits.len() < 5 {
-        digits.push(0);
-    }
-
-    let code = digits[0] + (10 * digits[1]);
-
-    if code == 5 || code == 6 {
-        digits[4] = 1;
-    }
-
-    return OpCode {
-        code: code,
-        modes: digits[2..digits.len()].to_vec(),
-    };
-}
-
-fn new_intcomputer(program: Vec<i64>) -> IntComputer {
-    return IntComputer {
-        tape: program,
-        args: Vec::new(),
-        ptr: 0,
-        out: Vec::new(),
-    };
-}
-
-// fn part_one() {
-//     let input = include_str!("input");
-
-//     let program: Vec<i64> = input
-//         .trim()
-//         .split(",")
-//         .map(|op| op.trim().parse::<i64>().unwrap())
-//         .collect();
-
-//     let mut data = [0, 1, 2, 3, 4];
-//     let mut best = 0;
-//     heap_recursive(&mut data, |perm| {
-//         let _copy = program.to_vec();
-//         let mut amp = new_amplifier(_copy);
-//         let run_score = amp.run(perm.to_vec());
-
-//         if run_score > best {
-//             best = run_score;
-//         }
-//     });
-
-//     println!("Answer One: {:?}", best);
-// }
 
 fn part_two() {
     let input = include_str!("input");
@@ -253,7 +247,7 @@ fn part_two() {
     let mut best = 0;
     heap_recursive(&mut data, |perm| {
         let _copy = program.to_vec();
-        let mut amp = new_amplifier(_copy);
+        let mut amp = Amplifiers::new(_copy);
         let run_score = amp.run(perm.to_vec());
 
         if run_score > best {
@@ -262,11 +256,9 @@ fn part_two() {
     });
 
     println!("Answer Two: {:?}", best);
-
-
 }
 
 fn main() {
-    // part_one();
+    part_one();
     part_two();
 }
