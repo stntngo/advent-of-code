@@ -4,8 +4,8 @@
 
 (authors "Niels Lindgren")
 
+(generate_opam_files true)
+
 (package
  (name advent2022)
- (synopsis "A short synopsis")
- (description "A longer description")
  (depends ocaml dune))
