@@ -1,4 +1,3 @@
-use permutohedron::heap_recursive;
 use std::convert::TryFrom;
 
 trait Digits {
@@ -28,21 +27,21 @@ struct IntCodeComputer {
     tape: Vec<i64>,
     args: Vec<i64>,
     ptr: usize,
-    rel_base: usize,
+    rel_base: i64,
     out: Vec<i64>,
 }
 
-impl IntComputer {
-    fn new(program: Vec<i64>) IntComputer {
-        return IntComputer {
+impl IntCodeComputer {
+    fn new(program: Vec<i64>) -> Self {
+        return Self {
             tape: program,
             args: Vec::new(),
             ptr: 0,
             rel_base: 0,
             out: Vec::new(),
-        }
+        };
     }
-    
+
     fn input(&mut self, in_: i64) {
         self.args.push(in_)
     }
@@ -72,9 +71,9 @@ impl IntComputer {
                     }
                     2 => {
                         let raw_loc = self.rel_base as i64 + cmd.params[i];
-                        let loc = usize::try_from(raw_loc).unrwap();
+                        let loc = usize::try_from(raw_loc).unwrap();
                         operands.push(self.tape[loc]);
-                    },
+                    }
                     _ => (),
                 };
             }
@@ -136,10 +135,7 @@ impl IntComputer {
 
         self.ptr += params.len();
 
-        return Command {
-            op: op,
-            params: params,
-        };
+        return Command { op, params };
     }
 }
 
