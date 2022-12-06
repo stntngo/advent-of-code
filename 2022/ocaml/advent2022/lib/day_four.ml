@@ -35,8 +35,7 @@ end = struct
       is_between r1 r2 l1 || is_between r1 r2 l2 || is_between l1 l2 r1
       || is_between l1 l2 r2
 
-  let parse' =
-    lift3 (fun x _ y -> { lo = x; hi = y }) integer (char '-') integer
+  let parse' = lift3 (fun lo _ hi -> { lo; hi }) integer (char '-') integer
 
   let parse = lift3 (fun x _ y -> (x, y)) parse' (char ',') parse'
 end

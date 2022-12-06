@@ -1,4 +1,4 @@
 (library
  (name advent2022)
  (preprocess (pps ppx_show))
- (libraries angstrom str bheap base ppx_show.runtime))
+ (libraries angstrom str bheap base ppx_show.runtime unix))

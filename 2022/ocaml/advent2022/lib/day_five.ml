@@ -32,7 +32,11 @@ end = struct
     let amount = skip_ws (string "move") *> integer in
     let source = skip_ws (string "from") *> integer >>| ( + ) (-1) in
     let dest = skip_ws (string "to") *> integer >>| ( + ) (-1) in
-    lift3 (fun a s d -> { amount = a; source = s; dest = d }) amount source dest
+    lift3
+      (fun amount source dest -> { amount; source; dest })
+      amount
+      source
+      dest
 
   let apply app a c =
     let stack = Array.get a c.source in
@@ -51,7 +55,7 @@ module Parser : sig
 end = struct
   module Commands = Advent.Parser.Line (Command)
 
-  type t = char list array * Command.t list
+  type t = char list array * Commands.t
 
   let parse_stacks =
     let line =

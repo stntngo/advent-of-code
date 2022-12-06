@@ -62,7 +62,7 @@ module Solution : sig
 
   val part_two : string lazy_t
 end = struct
-  let parse_round ours =
+  let round ours =
     lift3 (fun x _ y -> (x, y)) (Choice.parse 'A') (char ' ') ours
 
   let input = slurp "input/day02" |> lines
@@ -70,13 +70,13 @@ end = struct
   let part_one =
     lazy
       (input
-      |> Seq.map (parse (parse_round (Choice.parse 'X')))
+      |> Seq.map (parse (round (Choice.parse 'X')))
       |> Seq.map Choice.score_game |> List.of_seq |> sum |> string_of_int)
 
   let part_two =
     lazy
       (input
-      |> Seq.map (parse (parse_round Strategy.parse))
+      |> Seq.map (parse (round Strategy.parse))
       |> Seq.map Strategy.to_game |> Seq.map Choice.score_game |> List.of_seq
       |> sum |> string_of_int)
 end
