@@ -66,7 +66,7 @@ end = struct
       in
       sep_by (char ' ') payload >>| fun l -> l |> List.mapi (fun i v -> (i, v))
     in
-    sep_by (string "\n") line >>| fun l ->
+    sep_by1 (string "\n") line >>| fun l ->
     let len = l |> List.hd |> List.length in
     let stacks = Array.make len [] in
     l |> List.flatten |> List.rev |> List.to_seq

@@ -5,17 +5,14 @@ module Command = struct
     | Root
     | Up
     | Loc of string
-  [@@deriving show]
 
   type content =
     | Dir of string
     | File of int * string
-  [@@deriving show]
 
   type t =
     | List of content list
     | ChangeDir of target
-  [@@deriving show]
 
   let dollar = char '$'
 
@@ -63,12 +60,6 @@ end
 module Directory = struct
   module P = Advent.Parser.Line (Command)
 
-  module Files = Set.Make (struct
-    type t = int * string
-
-    let compare (_, a) (_, b) = Stdlib.compare a b
-  end)
-
   let path_str p =
     let rec path_aux p =
       match p with
@@ -79,18 +70,10 @@ module Directory = struct
 
   type t =
     { path : string list
-    ; parent : t ref option [@opaque]
+    ; parent : t ref option
     ; mutable subdirs : t ref list
-          [@printer
-            fun fmt d ->
-              Format.pp_print_list
-                ~pp_sep:Format.pp_print_space
-                (fun fmt dir -> Format.pp_print_string fmt (path_str !dir.path))
-                fmt
-                d]
     ; mutable files : (int * string) list
     }
-  [@@deriving show]
 
   let make parent name =
     ref
@@ -100,18 +83,23 @@ module Directory = struct
       ; files = []
       }
 
+  let x =
+    10 |> string_of_int |> String.to_seq
+    |> Seq.map (fun _ -> '*')
+    |> String.of_seq
+
   let navigate commands =
     let root = ref { path = []; parent = None; subdirs = []; files = [] } in
-    let rec nav_aux commands dir =
+    let rec nav_aux (commands : Command.t list) dir =
       match commands with
       | [] -> root
-      | Command.ChangeDir Up :: t -> nav_aux t (Option.get !dir.parent)
-      | Command.ChangeDir Root :: t -> nav_aux t root
-      | Command.ChangeDir (Loc p) :: t ->
+      | ChangeDir Up :: t -> nav_aux t (Option.get !dir.parent)
+      | ChangeDir Root :: t -> nav_aux t root
+      | ChangeDir (Loc p) :: t ->
         nav_aux
           t
           (List.find (fun d -> String.equal (List.hd !d.path) p) !dir.subdirs)
-      | Command.List c :: t ->
+      | List c :: t ->
         List.iter
           (function
             | Command.Dir p -> !dir.subdirs <- make dir p :: !dir.subdirs

@@ -39,6 +39,14 @@ let window n xs =
   in
   window_aux xs
 
+let rev xs =
+  let rec rev_aux t xs =
+    match xs () with
+    | Seq.Nil -> t
+    | Seq.Cons (x, xs) -> rev_aux (Seq.cons x t) xs
+  in
+  rev_aux Seq.empty xs
+
 let lines s = s |> Str.split (Str.regexp "\n") |> List.to_seq
 
 module Parser = struct
