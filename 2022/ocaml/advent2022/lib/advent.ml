@@ -2,6 +2,36 @@ open Angstrom
 
 let slurp p = In_channel.with_open_text p In_channel.input_all
 
+module List = struct
+  include List
+
+  let rec sum l =
+    match l with
+    | [] -> 0
+    | h :: t -> h + sum t
+
+  let rec take k xs =
+    match k with
+    | 0 -> []
+    | k -> (
+      match xs with
+      | [] -> failwith "take"
+      | y :: ys -> y :: take (k - 1) ys)
+
+  let rec drop k xs =
+    match k with
+    | 0 -> xs
+    | k -> (
+      match xs with
+      | [] -> []
+      | _ :: ys -> drop (k - 1) ys)
+
+  let rec chunk n xs =
+    match xs with
+    | [] -> []
+    | _ -> take n xs :: chunk n (drop n xs)
+end
+
 let rec sum l =
   match l with
   | [] -> 0
@@ -22,6 +52,34 @@ let rec drop k xs =
     match xs with
     | [] -> failwith "drop"
     | _ :: ys -> drop (k - 1) ys)
+
+module Seq = struct
+  include Seq
+
+  let chunk n xs =
+    let rec chunk_aux xs () =
+      match xs () with
+      | Seq.Nil -> Seq.Nil
+      | _ -> Seq.Cons (Seq.take n xs, chunk_aux (Seq.drop n xs))
+    in
+    chunk_aux xs
+
+  let window n xs =
+    let rec window_aux xs () =
+      match xs () with
+      | Seq.Nil -> Seq.Nil
+      | _ -> Seq.Cons (Seq.take n xs, window_aux (Seq.drop 1 xs))
+    in
+    window_aux xs
+
+  let rev xs =
+    let rec rev_aux t xs =
+      match xs () with
+      | Seq.Nil -> t
+      | Seq.Cons (x, xs) -> rev_aux (Seq.cons x t) xs
+    in
+    rev_aux Seq.empty xs
+end
 
 let chunk n xs =
   let rec chunk_aux xs () =

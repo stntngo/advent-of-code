@@ -85,9 +85,13 @@ module Solution = struct
 
   let forest_array = forest |> Seq.map Array.of_seq |> Array.of_seq
 
-  let part_one = lazy (forest |> Forest.tree_cover |> string_of_int)
+  let part_one = lazy "omitted"
 
-  let part_two =
+  let _ = lazy (forest |> Forest.tree_cover |> string_of_int)
+
+  let part_two = lazy "omitted"
+
+  let _ =
     lazy
       (forest_array
       |> Array.mapi (fun y a ->
