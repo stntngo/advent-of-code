@@ -63,7 +63,7 @@ module Monkey (I : Integral) = struct
     m.items <- Array.make 0 I.zero;
     Array.iter
       (fun i ->
-        let dest = Array.get ms (m.test i) in
+        let dest = ms.(m.test i) in
         dest.items <- Array.append dest.items [| i |])
       inspected
 

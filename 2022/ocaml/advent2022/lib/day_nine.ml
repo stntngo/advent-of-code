@@ -57,10 +57,10 @@ end
 
 module Rope = struct
   let move1' (d : Command.direction) (rope : Knot.t Array.t) =
-    Array.set rope 0 (Knot.move_head d (Array.get rope 0));
+    Array.set rope 0 (Knot.move_head d rope.(0));
     for i = 1 to Array.length rope - 1 do
-      let n = Array.get rope (i - 1) in
-      let k = Array.get rope i in
+      let n = rope.(i - 1) in
+      let k = rope.(i) in
       Array.set rope i (Knot.follow n k)
     done;
     rope
@@ -87,7 +87,7 @@ module Solution = struct
        |> Seq.scan
             (fun _ c ->
               let _ = Rope.move1' c rope in
-              Array.get rope last)
+              rope.(last))
             Knot.origin
        |> S.of_seq |> S.cardinal |> string_of_int)
 
@@ -101,7 +101,7 @@ module Solution = struct
        |> Seq.scan
             (fun _ c ->
               let _ = Rope.move1' c rope in
-              Array.get rope last)
+              rope.(last))
             Knot.origin
        |> S.of_seq |> S.cardinal |> string_of_int)
 end

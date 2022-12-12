@@ -39,10 +39,10 @@ end = struct
       dest
 
   let apply app a c =
-    let stack = Array.get a c.source in
+    let stack = a.(c.source) in
     let moved = Advent.take c.amount stack in
     let source' = Advent.drop c.amount stack in
-    let dest = Array.get a c.dest in
+    let dest = a.(c.dest) in
     let dest' = app moved dest in
     Array.set a c.source source';
     Array.set a c.dest dest'
@@ -72,7 +72,7 @@ end = struct
     l |> List.flatten |> List.rev |> List.to_seq
     |> Seq.filter (fun (_, v) -> v != ' ')
     |> Seq.iter (fun (i, v) ->
-           let existing = Array.get stacks i in
+           let existing = stacks.(i) in
            Array.set stacks i (v :: existing));
     stacks
 

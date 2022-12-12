@@ -38,31 +38,31 @@ module Forest = struct
     let lines = Array.make 4 [] in
     (* north *)
     for i = 0 to y - 1 do
-      let line = Array.get lines 0 in
-      Array.set lines 0 (Array.get (Array.get a i) x :: line)
+      let line = lines.(0) in
+      Array.set lines 0 (a.(i).(x) :: line)
     done;
 
     (* south *)
     for i = y + 1 to Array.length a - 1 do
-      let line = Array.get lines 1 in
-      Array.set lines 1 (Array.get (Array.get a i) x :: line)
+      let line = lines.(1) in
+      Array.set lines 1 (a.(i).(x) :: line)
     done;
-    Array.set lines 1 (List.rev (Array.get lines 1));
+    Array.set lines 1 (List.rev lines.(1));
 
-    let width = Array.length (Array.get a 0) in
+    let width = Array.length a.(0) in
 
     (* west *)
     for i = 0 to x - 1 do
-      let line = Array.get lines 2 in
-      Array.set lines 2 (Array.get (Array.get a y) i :: line)
+      let line = lines.(2) in
+      Array.set lines 2 (a.(y).(i) :: line)
     done;
 
     (* east *)
     for i = x + 1 to width - 1 do
-      let line = Array.get lines 3 in
-      Array.set lines 3 (Array.get (Array.get a y) i :: line)
+      let line = lines.(3) in
+      Array.set lines 3 (a.(y).(i) :: line)
     done;
-    Array.set lines 3 (List.rev (Array.get lines 3));
+    Array.set lines 3 (List.rev lines.(3));
 
     lines
 
@@ -73,7 +73,7 @@ module Forest = struct
     | Some (i, _) -> i + 1
 
   let scenic_score x y a =
-    let height = Array.get (Array.get a y) x in
+    let height = a.(y).(x) in
     let lines = sight_lines x y a in
     Array.map (score' height) lines |> Array.fold_left (fun x y -> x * y) 1
 end
