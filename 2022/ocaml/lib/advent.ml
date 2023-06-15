@@ -4,6 +4,15 @@ let slurp p = In_channel.with_open_text p In_channel.input_all
 
 let const a _ = a
 
+module Array = struct
+  include Array
+
+  let get_opt i a =
+    match i with
+    | i when i < 0 || i >= Array.length a -> None
+    | _ -> Some a.(i)
+end
+
 module List = struct
   include List
 

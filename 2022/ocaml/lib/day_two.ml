@@ -35,6 +35,20 @@ module Choice = struct
     | 2 -> Scissors
     | _ -> failwith "parse choice"
 
+  let bind = ( >>= )
+
+  let or' = ( <|> )
+
+  let chainl1 e op =
+    let rec go acc = lift2 (fun f x -> f acc x) op e >>= go <|> return acc in
+    e >>= fun init -> go init
+
+  let chainl2 e op =
+    let rec go acc =
+      or' (lift2 (fun f x -> f acc x) op (bind e go)) (return acc)
+    in
+    bind e (fun init -> go init)
+
   let parse base = any_char >>| of_char base
 end
 

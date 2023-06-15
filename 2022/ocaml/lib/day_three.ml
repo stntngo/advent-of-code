@@ -37,3 +37,13 @@ end = struct
      |> Seq.map common_item |> Seq.map priority |> List.of_seq |> Advent.sum
      |> string_of_int)
 end
+
+module Polynomial = struct
+  type t = float list
+
+  let evaluate (p : t) (x : float) : float =
+    List.fold_left
+      ( +. )
+      0.0
+      (List.mapi (fun i a -> a *. (x ** float_of_int i)) p)
+end

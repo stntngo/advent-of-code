@@ -14,6 +14,12 @@ module Forest = struct
       >>| List.to_seq)
     >>| List.to_seq
 
+  let foo = parse
+
+  let bar = foo
+
+  let baz = bar
+
   let visible' (l : int Seq.t) =
     match l () with
     | Seq.Nil -> Seq.empty

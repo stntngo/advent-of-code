@@ -9,6 +9,7 @@ module Day_eight = Advent2022.Day_eight
 module Day_nine = Advent2022.Day_nine
 module Day_ten = Advent2022.Day_ten
 module Day_eleven = Advent2022.Day_eleven
+module Day_twelve = Advent2022.Day_twelve
 module Advent = Advent2022.Advent
 
 let days =
@@ -23,6 +24,7 @@ let days =
   ; (Day_nine.Solution.part_one, Day_nine.Solution.part_two)
   ; (Day_ten.Solution.part_one, Day_ten.Solution.part_two)
   ; (Day_eleven.Solution.part_one, Day_eleven.Solution.part_two)
+  ; (Day_twelve.Solution.part_one, Day_twelve.Solution.part_two)
   ]
 
 let () = Advent.time (Advent.print_results days)
