@@ -1,4 +1,5 @@
 (library
  (name advent2022)
- (preprocess (pps ppx_deriving.show))
- (libraries angstrom str bheap base ppx_show.runtime unix integers))
+ (preprocess (pps ppx_deriving.show ppx_inline_test))
+ (libraries angstrom str bheap base ppx_show.runtime unix integers camlp-streams)
+ (inline_tests))
