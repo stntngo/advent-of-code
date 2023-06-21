@@ -2,36 +2,26 @@ open Angstrom
 open Advent
 
 module Instruction = struct
-  type t =
-    | Noop
-    | Addx of int
-  [@@deriving show]
+  type t = Noop | Addx of int [@@deriving show]
 
   let integer1 =
-    char '-'
-    <|> satisfy (function
-            | '0' .. '9' -> true
-            | _ -> false)
+    char '-' <|> satisfy (function '0' .. '9' -> true | _ -> false)
 
   let integer =
-    take_while (function
-        | '0' .. '9' -> true
-        | _ -> false)
+    take_while (function '0' .. '9' -> true | _ -> false)
     |> both integer1 |> consumed >>| int_of_string
 
   let parse_noop = string "noop" >>| fun _ -> Noop
-
   let parse_addx = string "addx" *> char ' ' *> integer >>| fun i -> Addx i
-
   let parse = parse_noop <|> parse_addx
 end
 
 module CPU = struct
-  type t =
-    { instructions : Instruction.t array
-    ; mutable reg_x : int
-    ; mutable counter : int
-    }
+  type t = {
+    instructions : Instruction.t array;
+    mutable reg_x : int;
+    mutable counter : int;
+  }
   [@@deriving show]
 
   let init instructions = { instructions; reg_x = 1; counter = 1 }
@@ -41,9 +31,7 @@ module CPU = struct
     Array.iter
       (fun i ->
         let width =
-          match i with
-          | Instruction.Noop -> 1
-          | Instruction.Addx _ -> 2
+          match i with Instruction.Noop -> 1 | Instruction.Addx _ -> 2
         in
         for _ = 1 to width do
           if
@@ -65,9 +53,7 @@ module CPU = struct
     Array.iter
       (fun i ->
         let width =
-          match i with
-          | Instruction.Noop -> 1
-          | Instruction.Addx _ -> 2
+          match i with Instruction.Noop -> 1 | Instruction.Addx _ -> 2
         in
         for _ = 1 to width do
           let px = (cpu.counter - 1) mod w in
@@ -87,11 +73,11 @@ end
 module Solution = struct
   module P = Parser.Make (Parser.Line (Instruction))
 
-  let input = P.parse "input/day10" |> Array.of_list
+  let input = lazy (P.parse "input/day10" |> Array.of_list)
 
   let part_one =
     lazy
-      (input |> CPU.init
+      (Lazy.force input |> CPU.init
       |> CPU.run [ 20; 60; 100; 140; 180; 220 ]
       |> sum |> string_of_int)
 
@@ -99,7 +85,7 @@ module Solution = struct
     let w = 40 in
     lazy
       ("\n"
-      ^ (input |> CPU.init |> CPU.draw w |> List.rev |> List.chunk w
+      ^ (Lazy.force input |> CPU.init |> CPU.draw w |> List.rev |> List.chunk w
        |> List.map List.to_seq |> List.map String.of_seq |> String.concat "\n")
       )
 end

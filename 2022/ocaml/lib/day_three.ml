@@ -1,6 +1,5 @@
 module Solution : sig
   val part_one : string lazy_t
-
   val part_two : string lazy_t
 end = struct
   module S = Set.Make (struct
@@ -24,26 +23,24 @@ end = struct
     and p = Char.code c in
     if p > start_lower then p - start_lower else p - start_upper + 26
 
-  let input = Advent.slurp "input/day03" |> Advent.lines
+  let input = lazy (Advent.slurp "input/day03" |> Advent.lines)
 
   let part_one =
     lazy
-      (input |> Seq.map bisect_string |> Seq.map common_item |> Seq.map priority
-     |> List.of_seq |> Advent.sum |> string_of_int)
+      (Lazy.force input |> Seq.map bisect_string |> Seq.map common_item
+     |> Seq.map priority |> List.of_seq |> Advent.sum |> string_of_int)
 
   let part_two =
     lazy
-      (input |> Seq.map String.to_seq |> Seq.map S.of_seq |> Advent.chunk 3
-     |> Seq.map common_item |> Seq.map priority |> List.of_seq |> Advent.sum
-     |> string_of_int)
+      (Lazy.force input |> Seq.map String.to_seq |> Seq.map S.of_seq
+     |> Advent.chunk 3 |> Seq.map common_item |> Seq.map priority |> List.of_seq
+     |> Advent.sum |> string_of_int)
 end
 
 module Polynomial = struct
   type t = float list
 
   let evaluate (p : t) (x : float) : float =
-    List.fold_left
-      ( +. )
-      0.0
+    List.fold_left ( +. ) 0.0
       (List.mapi (fun i a -> a *. (x ** float_of_int i)) p)
 end

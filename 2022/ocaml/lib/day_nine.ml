@@ -2,19 +2,11 @@ open Angstrom
 open Advent
 
 module Command = struct
-  type direction =
-    | Left
-    | Right
-    | Up
-    | Down
-
+  type direction = Left | Right | Up | Down
   type t = direction * int
 
   let dir =
-    satisfy (function
-        | 'U' | 'D' | 'L' | 'R' -> true
-        | _ -> false)
-    >>| function
+    satisfy (function 'U' | 'D' | 'L' | 'R' -> true | _ -> false) >>| function
     | 'U' -> Up
     | 'D' -> Down
     | 'L' -> Left
@@ -22,19 +14,13 @@ module Command = struct
     | _ -> invalid_arg "unknown direction"
 
   let size =
-    take_while1 (function
-        | '0' .. '9' -> true
-        | _ -> false)
-    >>| int_of_string
+    take_while1 (function '0' .. '9' -> true | _ -> false) >>| int_of_string
 
   let parse = lift2 (fun dir size -> (dir, size)) dir (char ' ' *> size)
 end
 
 module Knot = struct
-  type t =
-    { x : int
-    ; y : int
-    }
+  type t = { x : int; y : int }
 
   let origin = { x = 0; y = 0 }
 
@@ -75,13 +61,13 @@ module Solution = struct
     let compare = Stdlib.compare
   end)
 
-  let input = P.parse "input/day09"
+  let input = lazy (P.parse "input/day09")
 
   let part_one =
     lazy
       (let rope = Array.init 2 (fun _ -> Knot.origin) in
        let last = Array.length rope - 1 in
-       input
+       input |> Lazy.force
        |> List.map (fun (d, i) -> List.init i (fun _ -> d))
        |> List.flatten |> List.to_seq
        |> Seq.scan
@@ -95,7 +81,7 @@ module Solution = struct
     lazy
       (let rope = Array.init 10 (fun _ -> Knot.origin) in
        let last = Array.length rope - 1 in
-       input
+       input |> Lazy.force
        |> List.map (fun (d, i) -> List.init i (fun _ -> d))
        |> List.flatten |> List.to_seq
        |> Seq.scan

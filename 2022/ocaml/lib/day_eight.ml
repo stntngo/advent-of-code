@@ -4,28 +4,23 @@ module Forest = struct
   type t = int Seq.t Seq.t
 
   let parse =
-    sep_by1
-      (string "\n")
+    sep_by1 (string "\n")
       (many1
-         (satisfy (function
-              | '0' .. '9' -> true
-              | _ -> false)
+         (satisfy (function '0' .. '9' -> true | _ -> false)
          >>| String.make 1 >>| int_of_string)
       >>| List.to_seq)
     >>| List.to_seq
 
   let foo = parse
-
   let bar = foo
-
   let baz = bar
 
   let visible' (l : int Seq.t) =
     match l () with
     | Seq.Nil -> Seq.empty
     | Seq.Cons (hd, tl) ->
-      Seq.scan (fun (_, el) x -> (x > el, max x el)) (true, hd) tl
-      |> Seq.map fst
+        Seq.scan (fun (_, el) x -> (x > el, max x el)) (true, hd) tl
+        |> Seq.map fst
 
   let visible l =
     let forward = visible' l in
@@ -87,21 +82,22 @@ end
 module Solution = struct
   module P = Advent.Parser.Make (Forest)
 
-  let forest = P.parse "input/day08"
+  let forest = lazy (P.parse "input/day08")
 
-  let forest_array = forest |> Seq.map Array.of_seq |> Array.of_seq
+  let forest_array =
+    Lazy.map (fun x -> x |> Seq.map Array.of_seq |> Array.of_seq) forest
 
   let part_one = lazy "omitted"
-
-  let _ = lazy (forest |> Forest.tree_cover |> string_of_int)
-
+  let _ = lazy (forest |> Lazy.force |> Forest.tree_cover |> string_of_int)
   let part_two = lazy "omitted"
 
   let _ =
     lazy
-      (forest_array
+      (forest_array |> Lazy.force
       |> Array.mapi (fun y a ->
-             Array.mapi (fun x _ -> Forest.scenic_score x y forest_array) a)
+             Array.mapi
+               (fun x _ -> Forest.scenic_score x y (Lazy.force forest_array))
+               a)
       |> Array.to_list |> Array.concat |> Array.fold_left max (-1)
       |> string_of_int)
 end

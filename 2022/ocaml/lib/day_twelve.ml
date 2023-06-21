@@ -1,11 +1,11 @@
-type node = int [@@deriving show]
-type edge = node * node [@@deriving show]
-type path = node list [@@deriving show]
-type tree = path list [@@deriving show]
-type 'a node' = node * 'a [@@deriving show]
-type 'b edge' = node * node * 'b [@@deriving show]
-type 'a path' = 'a node' list [@@deriving show]
-type 'a tree' = 'a path' list [@@deriving show]
+type node = int
+type edge = node * node
+type path = node list
+type tree = path list
+type 'a node' = node * 'a
+type 'b edge' = node * node * 'b
+type 'a path' = 'a node' list
+type 'a tree' = 'a path' list
 
 type ('a, 'b) context =
   | Context of ('b * node) list * node * 'a * ('b * node) list
@@ -23,11 +23,9 @@ end) =
 struct
   include G
 
-  exception Error of string
-
   let match_any g =
     match labeled_nodes g () with
-    | Seq.Nil -> raise (Error "empty graph")
+    | Seq.Nil -> failwith "empty graph"
     | Seq.Cons ((v, _), _) ->
         let c, g' = match_node v g in
         (Option.get c, g')
@@ -42,7 +40,7 @@ struct
         f c (ufold f u g')
 
   let gmap f = ufold (fun c g -> f c & g) empty
-  let nmap f = gmap (fun (Context (p, v, l, s)) -> Context (p, v, f l, s))
+  let nmap f = gmap (fun (Context (p, n, l, s)) -> Context (p, n, f l, s))
 
   let rec dfs nodes graph =
     match nodes () with

@@ -1,32 +1,19 @@
 open Angstrom
 
 module Command : sig
-  type t =
-    { amount : int
-    ; source : int
-    ; dest : int
-    }
+  type t = { amount : int; source : int; dest : int }
 
   val show : t -> string
-
   val parse : t Angstrom.t
 
   val apply :
     (char list -> char list -> char list) -> char list array -> t -> unit
 end = struct
-  type t =
-    { amount : int
-    ; source : int
-    ; dest : int
-    }
-  [@@deriving show]
+  type t = { amount : int; source : int; dest : int } [@@deriving show]
 
   let parse =
     let integer =
-      take_while1 (function
-          | '0' .. '9' -> true
-          | _ -> false)
-      >>| int_of_string
+      take_while1 (function '0' .. '9' -> true | _ -> false) >>| int_of_string
     in
     let skip_ws p = skip_many (char ' ') *> p <* skip_many (char ' ') in
     let amount = skip_ws (string "move") *> integer in
@@ -34,9 +21,7 @@ end = struct
     let dest = skip_ws (string "to") *> integer >>| ( + ) (-1) in
     lift3
       (fun amount source dest -> { amount; source; dest })
-      amount
-      source
-      dest
+      amount source dest
 
   let apply app a c =
     let stack = a.(c.source) in
@@ -77,11 +62,7 @@ end = struct
     stacks
 
   let skip_axis =
-    let label =
-      satisfy (function
-          | '0' .. '9' -> true
-          | _ -> false)
-    in
+    let label = satisfy (function '0' .. '9' -> true | _ -> false) in
     let skip_ws p = skip_many (char ' ') *> p <* skip_many (char ' ') in
     skip_many1 (skip_ws label) <* skip_many (string "\n")
 
@@ -90,22 +71,23 @@ end
 
 module Solution : sig
   val part_one : string lazy_t
-
   val part_two : string lazy_t
 end = struct
   module P = Advent.Parser.Make (Parser)
 
-  let stacks, commands = P.parse "input/day05"
+  let lazy_input = lazy (P.parse "input/day05")
 
   let part_one =
     lazy
-      (let stacks = Array.copy stacks in
+      (let stacks, commands = Lazy.force lazy_input in
+       let stacks = Array.copy stacks in
        commands |> List.iter (Command.apply List.rev_append stacks);
        stacks |> Array.map List.hd |> Array.to_seq |> String.of_seq)
 
   let part_two =
     lazy
-      (let stacks = Array.copy stacks in
+      (let stacks, commands = Lazy.force lazy_input in
+       let stacks = Array.copy stacks in
        commands |> List.iter (Command.apply List.append stacks);
        stacks |> Array.map List.hd |> Array.to_seq |> String.of_seq)
 end
