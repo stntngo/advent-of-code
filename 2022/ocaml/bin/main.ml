@@ -11,20 +11,22 @@ module Day_ten = Advent2022.Day_ten
 module Day_eleven = Advent2022.Day_eleven
 module Day_twelve = Advent2022.Day_twelve
 module Advent = Advent2022.Advent
+module Dict = Advent2022.Dict
 
 let days =
-  [ (Day_one.Solution.part_one, Day_one.Solution.part_two)
-  ; (Day_two.Solution.part_one, Day_two.Solution.part_two)
-  ; (Day_three.Solution.part_one, Day_three.Solution.part_two)
-  ; (Day_four.Solution.part_one, Day_four.Solution.part_two)
-  ; (Day_five.Solution.part_one, Day_five.Solution.part_two)
-  ; (Day_six.Solution.part_one, Day_six.Solution.part_two)
-  ; (Day_seven.Solution.part_one, Day_seven.Solution.part_two)
-  ; (Day_eight.Solution.part_one, Day_eight.Solution.part_two)
-  ; (Day_nine.Solution.part_one, Day_nine.Solution.part_two)
-  ; (Day_ten.Solution.part_one, Day_ten.Solution.part_two)
-  ; (Day_eleven.Solution.part_one, Day_eleven.Solution.part_two)
-  ; (Day_twelve.Solution.part_one, Day_twelve.Solution.part_two)
+  [
+    (Day_one.Solution.part_one, Day_one.Solution.part_two);
+    (Day_two.Solution.part_one, Day_two.Solution.part_two);
+    (Day_three.Solution.part_one, Day_three.Solution.part_two);
+    (Day_four.Solution.part_one, Day_four.Solution.part_two);
+    (Day_five.Solution.part_one, Day_five.Solution.part_two);
+    (Day_six.Solution.part_one, Day_six.Solution.part_two);
+    (Day_seven.Solution.part_one, Day_seven.Solution.part_two);
+    (Day_eight.Solution.part_one, Day_eight.Solution.part_two);
+    (Day_nine.Solution.part_one, Day_nine.Solution.part_two);
+    (Day_ten.Solution.part_one, Day_ten.Solution.part_two);
+    (Day_eleven.Solution.part_one, Day_eleven.Solution.part_two);
+    (Day_twelve.Solution.part_one, Day_twelve.Solution.part_two);
   ]
 
 let () = Advent.time (Advent.print_results days)

@@ -2,25 +2,11 @@ open Advent
 open Angstrom
 
 module Choice = struct
-  type t =
-    | Rock
-    | Paper
-    | Scissors
+  type t = Rock | Paper | Scissors
 
-  let better = function
-    | Rock -> Paper
-    | Paper -> Scissors
-    | Scissors -> Rock
-
-  let worse = function
-    | Rock -> Scissors
-    | Paper -> Rock
-    | Scissors -> Paper
-
-  let points = function
-    | Rock -> 1
-    | Paper -> 2
-    | Scissors -> 3
+  let better = function Rock -> Paper | Paper -> Scissors | Scissors -> Rock
+  let worse = function Rock -> Scissors | Paper -> Rock | Scissors -> Paper
+  let points = function Rock -> 1 | Paper -> 2 | Scissors -> 3
 
   let score_game game =
     match game with
@@ -36,7 +22,6 @@ module Choice = struct
     | _ -> failwith "parse choice"
 
   let bind = ( >>= )
-
   let or' = ( <|> )
 
   let chainl1 e op =
@@ -53,10 +38,7 @@ module Choice = struct
 end
 
 module Strategy = struct
-  type t =
-    | Win
-    | Lose
-    | Tie
+  type t = Win | Lose | Tie
 
   let to_game = function
     | opp, Win -> (opp, Choice.better opp)
@@ -73,24 +55,27 @@ end
 
 module Solution : sig
   val part_one : string lazy_t
-
   val part_two : string lazy_t
 end = struct
   let round ours =
     lift3 (fun x _ y -> (x, y)) (Choice.parse 'A') (char ' ') ours
 
-  let input = slurp "input/day02" |> lines
+  let input = lazy (slurp "input/day02" |> lines)
 
   let part_one =
-    lazy
-      (input
-      |> Seq.map (parse (round (Choice.parse 'X')))
-      |> Seq.map Choice.score_game |> List.of_seq |> sum |> string_of_int)
+    Lazy.map
+      (fun input ->
+        input
+        |> Seq.map (parse (round (Choice.parse 'X')))
+        |> Seq.map Choice.score_game |> List.of_seq |> sum |> string_of_int)
+      input
 
   let part_two =
-    lazy
-      (input
-      |> Seq.map (parse (round Strategy.parse))
-      |> Seq.map Strategy.to_game |> Seq.map Choice.score_game |> List.of_seq
-      |> sum |> string_of_int)
+    Lazy.map
+      (fun input ->
+        input
+        |> Seq.map (parse (round Strategy.parse))
+        |> Seq.map Strategy.to_game |> Seq.map Choice.score_game |> List.of_seq
+        |> sum |> string_of_int)
+      input
 end

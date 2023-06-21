@@ -78,29 +78,56 @@ module BinaryTrie = struct
 
   let remove k t =
     let rec rmv = function
-      | Empty -> Empty
-      | Lf (j, _) as t -> if j == k then Empty else t
-      | Br (p, m, t0, t1) as t ->
+      | Empty -> (None, Empty)
+      | Lf (j, v) as t -> if j == k then (Some v, Empty) else (None, t)
+      | Br (p, m, left, right) as t ->
           if match_prefix k p m then
-            if zero_bit k m then br (p, m, rmv t0, t1) else br (p, m, t0, rmv t1)
-          else t
+            if zero_bit k m then
+              let node, left = rmv left in
+              (node, br (p, m, left, right))
+            else
+              let node, right = rmv right in
+              (node, br (p, m, left, right))
+          else (None, t)
     in
     rmv t
 
   let from_list l = List.fold_left (fun d (k, v) -> insert fst k v d) empty l
+
+  let to_list d =
+    let rec lst = function
+      | Empty -> []
+      | Lf (k, v) -> [ (k, v) ]
+      | Br (_, _, l, r) -> List.append (lst l) (lst r)
+    in
+    lst d
+
+  let fold f init d =
+    let rec aux init = function
+      | Empty -> init
+      | Lf (k, v) -> f init (k, v)
+      | Br (_, _, l, r) -> aux (aux init l) r
+    in
+    aux init d
+
+  let map f d = fold (fun a e -> f e :: a) [] d
 end
 
-let%test "construct and retrieve" =
+let%test_unit "construct and retrieve" =
   let in' = [ (1, "a"); (2, "b"); (3, "c"); (4, "d"); (5, "e") ] in
   let out' = List.map snd in' in
   let d = BinaryTrie.from_list in' in
   let got = List.map (fun (k, _) -> Option.get (BinaryTrie.lookup k d)) in' in
-  List.equal String.equal got out'
+  let open Base in
+  [%test_eq: string list] got out'
 
-let%test "delete node" =
+let%test_unit "delete node" =
   let in' = [ (1, "a"); (2, "b"); (3, "c"); (4, "d"); (5, "e") ] in
-  let d = BinaryTrie.remove 2 (BinaryTrie.from_list in') in
-  let () = print_string (BinaryTrie.show_dict Format.pp_print_string d) in
+  let d = BinaryTrie.from_list in' in
+  let got_deleted, d = BinaryTrie.remove 2 d in
   let got_missing = BinaryTrie.lookup 2 d in
   let got_there = BinaryTrie.lookup 5 d in
-  Option.is_none got_missing && Option.is_some got_there
+  let open Base in
+  [%test_eq: string option] got_deleted (Some "b");
+  [%test_eq: string option] got_missing None;
+  [%test_eq: string option] got_there (Some "e")
