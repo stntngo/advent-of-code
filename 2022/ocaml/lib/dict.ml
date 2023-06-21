@@ -110,7 +110,7 @@ module BinaryTrie = struct
     in
     aux init d
 
-  let map f d = fold (fun a e -> f e :: a) [] d
+  let map f d = fold (fun a e -> Seq.cons (f e) a) Seq.empty d
 end
 
 let%test_unit "construct and retrieve" =
