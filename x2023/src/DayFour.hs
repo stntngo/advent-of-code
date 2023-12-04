@@ -50,8 +50,8 @@ scoreCard _ = 0
 countCards :: Map Int Card -> Card -> Map Int Int -> Map Int Int
 countCards cards (Card {idx = cardIdx, matches = matches'}) scores =
   let extras = mapMaybe (`Data.Map.lookup` cards) [cardIdx + 1 .. cardIdx + matches']
-   in let found = sum $ map find' extras
-       in Data.Map.insert cardIdx (found + 1) scores
+      found = sum $ map find' extras
+   in Data.Map.insert cardIdx (found + 1) scores
   where
     find' card =
       findWithDefault

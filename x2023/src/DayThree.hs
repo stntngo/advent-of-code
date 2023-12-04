@@ -58,20 +58,20 @@ splitEntries = foldr (flip update) ([], [])
 findGears :: Parser [[PartNumber]]
 findGears = do
   (parts, syms) <- splitEntries <$> parseEntries
-  let symLocs = map symStart syms
-  let neighbors = foldr (flip populate) empty parts
-  let filtered = Data.Map.filter (\x -> length x == 2) neighbors
-  let gears = mapMaybe (`Data.Map.lookup` filtered) symLocs
+  let filtered = gearLocations parts
+  let gears = mapMaybe ((`Data.Map.lookup` filtered) . symStart) syms
   return gears
   where
     populate :: Map (Int, Int) [PartNumber] -> PartNumber -> Map (Int, Int) [PartNumber]
     populate m p =
       let conns = connections (partStart p) (partEnd p)
-       in let update' = flip (alter (update p))
-           in foldr (flip update') m conns
+          update' = flip (alter (update p))
+       in foldr (flip update') m conns
 
     update x Nothing = Just [x]
     update x (Just xs) = Just (xs ++ [x])
+
+    gearLocations ps = Data.Map.filter (\x -> length x == 2) $ foldr (flip populate) empty ps
 
 combineGears :: Parser [Int]
 combineGears = map combine <$> findGears
