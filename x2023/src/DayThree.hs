@@ -50,7 +50,7 @@ parseEntries :: Parser [Entry]
 parseEntries = many ((dots *> parseEntry <* dots) <* spaces)
 
 splitEntries :: [Entry] -> ([PartNumber], [Symbol])
-splitEntries = foldl update ([], [])
+splitEntries = foldr (flip update) ([], [])
   where
     update (parts, syms) (Part x) = (parts ++ [x], syms)
     update (parts, syms) (Sym x) = (parts, syms ++ [x])
@@ -59,7 +59,7 @@ findGears :: Parser [[PartNumber]]
 findGears = do
   (parts, syms) <- splitEntries <$> parseEntries
   let symLocs = map symStart syms
-  let neighbors = foldl populate empty parts
+  let neighbors = foldr (flip populate) empty parts
   let filtered = Data.Map.filter (\x -> length x == 2) neighbors
   let gears = mapMaybe (`Data.Map.lookup` filtered) symLocs
   return gears
@@ -68,7 +68,7 @@ findGears = do
     populate m p =
       let conns = connections (partStart p) (partEnd p)
        in let update' = flip (alter (update p))
-           in foldl update' m conns
+           in foldr (flip update') m conns
 
     update x Nothing = Just [x]
     update x (Just xs) = Just (xs ++ [x])
