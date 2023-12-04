@@ -52,8 +52,8 @@ parseGames = many1 (parseGame <* spaces)
 filterGames :: (Int, Int, Int) -> Parser [Game]
 filterGames rgb = filter (validGame rgb) <$> parseGames
 
-scoreValidGames :: (Int, Int, Int) -> Parser Int
-scoreValidGames rgb = sum . map gameId <$> filterGames rgb
+scoreValidGames :: (Int, Int, Int) -> Parser [Int]
+scoreValidGames rgb = map gameId <$> filterGames rgb
 
 validGame :: (Int, Int, Int) -> Game -> Bool
 validGame (r, g, b) (Game (_, pulls)) = all validPulls pulls
@@ -64,18 +64,16 @@ validGame (r, g, b) (Game (_, pulls)) = all validPulls pulls
     validPulls = all validPull
 
 gamePowers :: Parser [Int]
-gamePowers = map power <$> parseGames
-
--- foo :: Game -> (Int, (Int, Int, Int))
-power :: Game -> Int
-power (Game (_, pulls)) =
-  let (r, g, b) = foldl update (0, 0, 0) (concat pulls)
-   in r * g * b
-
-update :: (Int, Int, Int) -> Pull -> (Int, Int, Int)
-update (r, g, b) (Red x) = (max r x, g, b)
-update (r, g, b) (Green x) = (r, max x g, b)
-update (r, g, b) (Blue x) = (r, g, max x b)
+gamePowers =
+  map power <$> parseGames
+  where
+    power (Game (_, pulls)) =
+      let (r, g, b) = foldl update (0, 0, 0) (concat pulls)
+       in r * g * b
+      where
+        update (r, g, b) (Red x) = (max r x, g, b)
+        update (r, g, b) (Green x) = (r, max x g, b)
+        update (r, g, b) (Blue x) = (r, g, max x b)
 
 dayTwo :: Solution Int
-dayTwo = Solution {partOne = scoreValidGames (12, 13, 14), partTwo = sum <$> gamePowers}
+dayTwo = Solution {partOne = sum <$> scoreValidGames (12, 13, 14), partTwo = sum <$> gamePowers}
