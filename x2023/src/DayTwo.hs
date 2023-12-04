@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 module DayTwo (dayTwo) where
 
 import Data.Functor

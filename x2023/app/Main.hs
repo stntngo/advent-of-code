@@ -3,6 +3,7 @@ module Main (main) where
 import Control.Monad ()
 import Data.List ()
 import DayOne (dayOne)
+import DayThree (dayThree)
 import DayTwo (dayTwo)
 import Parser (parse)
 import Solution (Solution, norm, partOne, partTwo)
@@ -10,7 +11,7 @@ import System.Console.GetOpt
 import System.Environment
 
 solutions :: [Solution String]
-solutions = [norm dayOne, norm dayTwo]
+solutions = [norm dayOne, norm dayTwo, norm dayThree]
 
 main :: IO ()
 main = do
