@@ -110,8 +110,8 @@ findSeed almanac =
 parseDestinations :: Parser [Int]
 parseDestinations = do
   almanac <- parseAlmanac destStart
-  let seeds' = fromList $ map (\x -> (head x, x)) $ chunksOf 2 (seeds almanac)
-  return (filter (isJust . translate seeds' . findSeed almanac) [0 ..])
+  let matchRealSeeds = translate $ fromList $ map (\x -> (head x, x)) $ chunksOf 2 (seeds almanac)
+  return (filter (isJust . matchRealSeeds . findSeed almanac) [0 ..])
   where
     translate seeds' k = do
       pair <- lookupLE k seeds'
