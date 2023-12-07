@@ -100,7 +100,7 @@ parseBid = read <$> many1 digit
 parsePlayer :: Parser ((HandType, [Int]), Int)
 parsePlayer = do
   hand <- parseHand
-  _ <- spaces
+  _ <- space
   bid <- parseBid
   return (hand, bid)
 
@@ -125,4 +125,5 @@ scoreJokerHands = do
   where
     score rank (_, bid) = rank * bid
 
+daySeven :: Solution Int
 daySeven = Solution {partOne = sum <$> scoreHands, partTwo = sum <$> scoreJokerHands}
