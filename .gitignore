@@ -68,3 +68,5 @@ Cargo.lock
 go.work
 
 Leiningen.gitignore
+
+**/input
