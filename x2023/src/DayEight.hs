@@ -18,20 +18,25 @@ parseDirs = many1 parseDir <* spaces
 parseLabel :: Parser String
 parseLabel = count 3 anyChar
 
-parseNode :: Parser (String, (String, String))
-parseNode = do
-  label' <- parseLabel
-  _ <- space
-  _ <- char '='
-  _ <- space
+parseTuple :: Parser (String, String)
+parseTuple = do
   _ <- char '('
   l <- parseLabel
   _ <- char ','
   _ <- space
   r <- parseLabel
   _ <- char ')'
+  return (l, r)
+
+parseNode :: Parser (String, (String, String))
+parseNode = do
+  label' <- parseLabel
+  _ <- space
+  _ <- char '='
+  _ <- space
+  dest <- parseTuple
   _ <- spaces
-  return (label', (l, r))
+  return (label', dest)
 
 parseMap :: Parser ([Direction], Map String (String, String))
 parseMap = do
