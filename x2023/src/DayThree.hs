@@ -19,7 +19,7 @@ loc = do
 
 data PartNumber = PartNumber {partStart :: (Int, Int), partEnd :: (Int, Int), partNum :: Int} deriving (Show)
 
-data Symbol = Symbol {symStart :: (Int, Int), symEnd :: (Int, Int), symbol :: Char} deriving (Show)
+data Symbol = Symbol {symStart :: (Int, Int), symbol :: Char} deriving (Show)
 
 data Entry
   = Part PartNumber
@@ -37,14 +37,13 @@ parseSymbol :: Parser Symbol
 parseSymbol = do
   start' <- loc
   symbol' <- noneOf ".\n"
-  (line, col) <- loc
-  return (Symbol {symStart = start', symEnd = (line, col - 1), symbol = symbol'})
+  return (Symbol {symStart = start', symbol = symbol'})
 
 parseEntry :: Parser Entry
 parseEntry = Part <$> parsePartNumber <|> Sym <$> parseSymbol
 
-dots :: Parser [String]
-dots = many (string ".")
+dots :: Parser [Char]
+dots = many (char '.')
 
 parseEntries :: Parser [Entry]
 parseEntries = many ((dots *> parseEntry <* dots) <* spaces)

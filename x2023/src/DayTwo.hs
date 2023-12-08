@@ -1,5 +1,6 @@
 module DayTwo (dayTwo) where
 
+import Control.Applicative ((<**>))
 import Data.Functor
 import Solution
 import Text.Parsec
@@ -19,30 +20,25 @@ parseInt = read <$> many1 digit
 ignoreWS :: Parser a -> Parser a
 ignoreWS p = spaces *> p <* spaces
 
-bind :: Parser a -> Parser (a -> b) -> Parser b
-bind p q = do x <- p; f <- q; return (f x)
-
 parsePull :: Parser Pull
 parsePull =
   ignoreWS
-    ( bind
-        (ignoreWS parseInt)
-        ( choice
-            [ string "red" $> Red,
-              string "blue" $> Blue,
-              string "green" $> Green
-            ]
-        )
+    ( ignoreWS parseInt
+        <**> choice
+          [ string "red" $> Red,
+            string "blue" $> Blue,
+            string "green" $> Green
+          ]
     )
 
 parsePulls :: Parser [Pull]
-parsePulls = ignoreWS (sepBy1 parsePull (string ","))
+parsePulls = ignoreWS (sepBy1 parsePull (char ','))
 
 parseGame :: Parser Game
 parseGame = do no <- parseGameNo; rounds <- parseRounds; return (Game (no, rounds))
   where
-    parseGameNo = string "Game " *> parseInt <* string ":"
-    parseRounds = ignoreWS (sepBy1 parsePulls (string ";"))
+    parseGameNo = string "Game " *> parseInt <* char ':'
+    parseRounds = ignoreWS (sepBy1 parsePulls (char ';'))
 
 parseGames :: Parser [Game]
 parseGames = many1 (parseGame <* spaces)
