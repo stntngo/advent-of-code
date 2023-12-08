@@ -2,6 +2,7 @@ module Main (main) where
 
 import Control.Monad ()
 import Data.List ()
+import DayEight (dayEight)
 import DayFive (dayFive)
 import DayFour (dayFour)
 import DayOne (dayOne)
@@ -22,7 +23,8 @@ solutions =
     norm dayFour,
     norm dayFive,
     norm daySix,
-    norm daySeven
+    norm daySeven,
+    norm dayEight
   ]
 
 main :: IO ()
