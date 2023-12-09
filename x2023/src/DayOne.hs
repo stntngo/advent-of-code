@@ -42,9 +42,12 @@ parseNumber =
     )
     <* anyChar
 
+parseDigit :: Parser Int
+parseDigit = digitToInt <$> digit
+
 parseElement :: Parser (Maybe Int)
 parseElement =
-  (Just <$> (parseNumber <|> (digitToInt <$> digit)))
+  (Just <$> (parseNumber <|> parseDigit))
     <|> letter $> Nothing
 
 calibration' :: [Int] -> Int
