@@ -5,6 +5,7 @@ import Data.List ()
 import DayEight (dayEight)
 import DayFive (dayFive)
 import DayFour (dayFour)
+import DayNine (dayNine)
 import DayOne (dayOne)
 import DaySeven (daySeven)
 import DaySix (daySix)
@@ -24,7 +25,8 @@ solutions =
     norm dayFive,
     norm daySix,
     norm daySeven,
-    norm dayEight
+    norm dayEight,
+    norm dayNine
   ]
 
 main :: IO ()
